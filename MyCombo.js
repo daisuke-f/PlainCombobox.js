@@ -49,17 +49,17 @@
 		this.list = null;
 		this.isListVisible = false;
 
-		// used to prevent blur event from rising up when button is clicking.
-		this.isButtonPressing = false;
+		// used to prevent listbox from raising blur event while it is opening.
+		this.isListboxOpening = false;
 
 		this.init();
 	}
 
 	MyCombo.prototype.onfocusout = function(evt) {
 		// console.debug('onblur');
-		if(evt.target == this.list && !this.isButtonPressing) {
+		if(evt.target == this.list && !this.isListboxOpening) {
 			this.closeList();
-		} else if(evt.target == this.element && !this.isButtonPressing) {
+		} else if(evt.target == this.element && !this.isListboxOpening) {
 			this.closeList();
 		}
 	};
@@ -90,12 +90,12 @@
 			}
 		} if(evt.target == this.element) {
 			if(evt.key == 'ArrowUp') {
-				this.isButtonPressing = true;
+				this.isListboxOpening = true;
 				this.openList()
 				this.list.lastChild.selected = true;
 				this.list.focus();
 			} else if(evt.key == 'ArrowDown') {
-				this.isButtonPressing = true;
+				this.isListboxOpening = true;
 				this.openList();
 				this.list.firstChild.selected = true;
 				this.list.focus();
@@ -106,16 +106,16 @@
 	MyCombo.prototype.onkeyup = function(evt) {
 		if(evt.target == this.list) {
 			if(evt.key == 'ArrowUp' || evt.key == 'ArrowDown')
-				this.isButtonPressing = false;
+				this.isListboxOpening = false;
 		}
 	};
 
 	MyCombo.prototype.onmousedown = function(evt) {
-		if(evt.target == this.button) this.isButtonPressing = true;
+		if(evt.target == this.button) this.isListboxOpening = true;
 	};
 
 	MyCombo.prototype.onmouseup = function(evt) {
-		if(evt.target == this.button) this.isButtonPressing = false;
+		if(evt.target == this.button) this.isListboxOpening = false;
 	}
 
 	MyCombo.prototype.onclick = function(evt) {
@@ -169,12 +169,20 @@
 		this.list.style.marginTop = -1 * Number.parseFloat(ref.marginBottom) + 'px';
 	};
 
-	MyCombo.prototype.openList = function(value) {
+	/**
+	 * Display listbox.
+	 */
+	MyCombo.prototype.openList = function() {
 		this.list.value = this.element.value;
 		this.list.style.display = 'block';
 		this.isListVisible = true;
 	};
 
+	/**
+	 * Hide listbox.
+	 * 
+	 * @param {string} value if specified, update textbox value with this value.
+	 */
 	MyCombo.prototype.closeList = function(value) {
 		if(value !== undefined) this.element.value = value;
 		this.list.style.display = 'none';
