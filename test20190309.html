@@ -34,7 +34,7 @@ function window_onload(evt) {
 		"10" : "123",
 		"99" : "XXX"
 	}
-	combo = new MyCombo(myCombo, data, { listSize: 2, buttonLabel: "->" });
+	combo = new MyCombo(myCombo, data);
 }
 var combo;
 window.onload = window_onload;
@@ -42,7 +42,7 @@ window.onload = window_onload;
 </head>
 <body>
 <h1><ruby><rb>今日<rt>こんにち</ruby>は</h1>
-<input type="text" id="myCombo">
+<input type="text" id="myCombo" style="font-size: 24pt">
 <div>
 <input type="text">
 <ul>

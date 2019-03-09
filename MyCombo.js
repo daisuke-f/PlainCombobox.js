@@ -2,6 +2,14 @@
 
 (function(global) {
 
+	/**
+	 * Create a combobox.
+	 * 
+	 * @constructor
+	 * @param {HTMLInputElement} element a textbox to become combobox.
+	 * @param {*} data a object or string array to be used in listbox.
+	 * @param {*} options 
+	 */
 	function MyCombo(element, data, options) {
 		if(!(element.tagName == 'INPUT' && element.type.toUpperCase() == 'TEXT')) {
 			throw new Error('element must be <input type="text">.');
@@ -101,23 +109,11 @@
 		}
 	};
 
-	MyCombo.prototype.openList = function(value) {
-		this.list.value = this.element.value;
-		this.list.style.display = 'block';
-		this.isListVisible = true;
-	};
-
-	MyCombo.prototype.closeList = function(value) {
-		if(value !== undefined) this.element.value = value;
-		this.list.style.display = 'none';
-		this.isListVisible = false;
-	};
-
-	MyCombo.prototype.button_onmousedown = function(evt) {
+	MyCombo.prototype.onmousedown = function(evt) {
 		if(evt.target == this.button) this.isButtonPressing = true;
 	};
 
-	MyCombo.prototype.button_onmouseup = function(evt) {
+	MyCombo.prototype.onmouseup = function(evt) {
 		if(evt.target == this.button) this.isButtonPressing = false;
 	}
 
@@ -130,13 +126,13 @@
 				this.openList();
 				this.list.focus();
 			}
-		} else if(evt.target.classList.contains('combo_list_item')) {
+		} else if(evt.target.parentNode == this.list) {
 			this.closeList(evt.target.getAttribute('value'));
 			this.element.focus();
 		}
 	};
 
-	MyCombo.prototype.input_oninput = function(evt) {
+	MyCombo.prototype.oninput = function(evt) {
 		if(!this.isListVisible) {
 			this.openList();
 		}
@@ -148,18 +144,32 @@
 		}
 	};
 
+	MyCombo.prototype.openList = function(value) {
+		this.list.value = this.element.value;
+		this.list.style.display = 'block';
+		this.isListVisible = true;
+	};
+
+	MyCombo.prototype.closeList = function(value) {
+		if(value !== undefined) this.element.value = value;
+		this.list.style.display = 'none';
+		this.isListVisible = false;
+	};
+
 	MyCombo.prototype.init = function() {
 		this.button = document.createElement('button');
 		this.button.appendChild(document.createTextNode(this.options.buttonLabel));
+		this.button.classList.add(this.options.classPrefix + 'button');
 
 		this.list = document.createElement('select');
-		this.list.classList.add('combo_list');
+		this.list.style.position = 'absolute';
+		this.list.classList.add(this.options.classPrefix + 'list');
 		this.list.size = this.options.listSize;
 
 		Object.keys(this.data).sort().forEach(function(val) {
 			var item = document.createElement('option');
 			var itemLabel = this.options.itemLabelGenerator.apply(null, [ val, this.data[val] ]);
-			item.classList.add('combo_list_item');
+			item.classList.add(this.options.classPrefix + '_item');
 			item.appendChild(document.createTextNode(itemLabel));
 			item.value = val;
 			this.list.appendChild(item);
@@ -170,13 +180,13 @@
 		this.element.parentNode.insertBefore(this.button, nextSibling);
 		this.element.parentNode.insertBefore(this.list, nextSibling);
 
-		this.element.addEventListener('input', this.input_oninput.bind(this));
+		this.element.addEventListener('input', this.oninput.bind(this));
 		this.element.addEventListener('focusout', this.onfocusout.bind(this));
 		this.element.addEventListener('keydown', this.onkeydown.bind(this));
 		this.element.addEventListener('keyup', this.onkeyup.bind(this));
 
-		this.button.addEventListener('mousedown', this.button_onmousedown.bind(this));
-		this.button.addEventListener('mouseup', this.button_onmouseup.bind(this));
+		this.button.addEventListener('mousedown', this.onmousedown.bind(this));
+		this.button.addEventListener('mouseup', this.onmouseup.bind(this));
 		this.button.addEventListener('click', this.onclick.bind(this));
 
 		this.list.addEventListener('focusout', this.onfocusout.bind(this));
