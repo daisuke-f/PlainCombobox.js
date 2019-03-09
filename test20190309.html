@@ -24,10 +24,33 @@
 <script>
 'use strict';
 var combo;
-function MyCombo(element, data) {
+function MyCombo(element, data, options) {
+	if(!(element.tagName == 'INPUT' && element.type.toUpperCase() == 'TEXT')) {
+		throw new Error('element must be <input type="text">.');
+	}
+	if(data == null) {
+		throw new Error('data must be object or string array.');
+	}
+	if(data instanceof Array) {
+		if(!(0<data.length)) {
+			throw new Error('data must not be empty array.');
+		}
+	} else {
+		if(!(0<Object.keys(data).length)) {
+			throw new Error('data must has 1 or more properties');
+		}
+	}
+
 	this.element = element;
 	this.data = data;
-	this.input = null;
+	this.options = MyCombo.DEFAULT_OPTIONS;
+
+	if(options) {
+		for(var prop in options) {
+			this.options[prop] = options[prop];
+		}
+	}
+
 	this.button = null;
 	this.list = null;
 	this.isListVisible = false;
@@ -37,11 +60,17 @@ function MyCombo(element, data) {
 
 	this.init();
 }
+MyCombo.DEFAULT_OPTIONS = {
+	buttonLabel : 'X',
+	classPrefix : 'MyCombo_',
+	itemLabelGenerator : function(value, name) { return value + ": " + name; },
+	listSize : 10
+};
 MyCombo.prototype.onfocusout = function(evt) {
 	// console.debug('onblur');
 	if(evt.target == this.list && !this.isButtonPressing) {
 		this.closeList();
-	} else if(evt.target == this.input && !this.isButtonPressing) {
+	} else if(evt.target == this.element && !this.isButtonPressing) {
 		this.closeList();
 	}
 };
@@ -49,29 +78,29 @@ MyCombo.prototype.focus = function(evt) {
 };
 MyCombo.prototype.onkeydown = function(evt) {
 	// console.debug('onkeydown');
-	if(evt.target == this.input || evt.target == this.list) {
+	if(evt.target == this.element || evt.target == this.list) {
 		if(evt.key == 'Escape') {
 			this.closeList();
-			this.input.focus();
+			this.element.focus();
 		}
 	} if(evt.target == this.list) {
 		if(evt.key == 'Enter' || evt.key == ' ') {
 			this.closeList(evt.target.value);
-			this.input.focus();
+			this.element.focus();
 		} else if(evt.key == 'Tab') {
 			evt.preventDefault();
 			this.closeList();
-			this.input.focus();
+			this.element.focus();
 		} else if(evt.key == 'ArrowUp' && this.list.firstChild.selected) {
 			evt.preventDefault();
 			this.closeList();
-			this.input.focus();
+			this.element.focus();
 		} else if(evt.key == 'ArrowDown' && this.list.lastChild.selected) {
 			evt.preventDefault();
 			this.closeList();
-			this.input.focus();
+			this.element.focus();
 		}
-	} if(evt.target == this.input) {
+	} if(evt.target == this.element) {
 		if(evt.key == 'ArrowUp') {
 			this.isButtonPressing = true;
 			this.openList()
@@ -92,12 +121,12 @@ MyCombo.prototype.onkeyup = function(evt) {
 	}
 };
 MyCombo.prototype.openList = function(value) {
-	this.list.value = this.input.value;
+	this.list.value = this.element.value;
 	this.list.style.display = 'block';
 	this.isListVisible = true;
 };
 MyCombo.prototype.closeList = function(value) {
-	if(value !== undefined) this.input.value = value;
+	if(value !== undefined) this.element.value = value;
 	this.list.style.display = 'none';
 	this.isListVisible = false;
 };
@@ -118,7 +147,7 @@ MyCombo.prototype.onclick = function(evt) {
 		}
 	} else if(evt.target.classList.contains('combo_list_item')) {
 		this.closeList(evt.target.getAttribute('value'));
-		this.input.focus();
+		this.element.focus();
 	}
 };
 MyCombo.prototype.input_oninput = function(evt) {
@@ -133,38 +162,48 @@ MyCombo.prototype.input_oninput = function(evt) {
 	}
 };
 MyCombo.prototype.init = function() {
-	this.input = document.createElement('input');
-	this.input.type = "text";
-
 	this.button = document.createElement('button');
-	this.button.appendChild(document.createTextNode('X'));
+	this.button.appendChild(document.createTextNode(this.options.buttonLabel));
 
 	this.list = document.createElement('select');
 	this.list.classList.add('combo_list');
-	this.list.size = 10;
+	this.list.size = this.options.listSize;
 
 	Object.keys(this.data).sort().forEach(function(val) {
 		var item = document.createElement('option');
-		var itemLabel = val + ' : ' + this.data[val];
+		var itemLabel = this.options.itemLabelGenerator.apply(null, [ val, this.data[val] ]);
 		item.classList.add('combo_list_item');
 		item.appendChild(document.createTextNode(itemLabel));
 		item.value = val;
 		this.list.appendChild(item);
 	}.bind(this));
 
-	this.element.classList.add('combo');
+	var nextSibling = this.element.nextSibling;
 
+	// this.element.classList.add('combo');
+
+	this.element.parentNode.insertBefore(this.button, nextSibling);
+	this.element.parentNode.insertBefore(this.list, nextSibling);
+	/*
 	this.element.appendChild(this.input);
 	this.element.appendChild(this.button);
 	this.element.appendChild(this.list);
+	*/
 
-	this.input.addEventListener('input', this.input_oninput.bind(this));
+	this.element.addEventListener('input', this.input_oninput.bind(this));
+
 	this.button.addEventListener('mousedown', this.button_onmousedown.bind(this));
 	this.button.addEventListener('mouseup', this.button_onmouseup.bind(this));
+
 	this.element.addEventListener('focusout', this.onfocusout.bind(this));
+	this.list.addEventListener('focusout', this.onfocusout.bind(this));
+
 	this.element.addEventListener('keydown', this.onkeydown.bind(this));
+	this.list.addEventListener('keydown', this.onkeydown.bind(this));
 	this.element.addEventListener('keyup', this.onkeyup.bind(this));
-	this.element.addEventListener('click', this.onclick.bind(this));
+	this.list.addEventListener('keyup', this.onkeyup.bind(this));
+	this.button.addEventListener('click', this.onclick.bind(this));
+	this.list.addEventListener('click', this.onclick.bind(this));
 
 	this.closeList();
 };
@@ -176,7 +215,7 @@ function window_onload(evt) {
 		"10" : "123",
 		"99" : "XXX"
 	}
-	combo = new MyCombo(myCombo, data);
+	combo = new MyCombo(myCombo, data, { listSize: 2, buttonLabel: "->" });
 }
 var combo;
 window.onload = window_onload;
@@ -184,7 +223,7 @@ window.onload = window_onload;
 </head>
 <body>
 <h1><ruby><rb>今日<rt>こんにち</ruby>は</h1>
-<div id="myCombo"></div>
+<input type="text" id="myCombo">
 <div>
 <input type="text">
 <ul>
