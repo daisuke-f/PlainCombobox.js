@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<style>
+.combo {
+	/*
+	position: relative;
+	*/
+}
+.combo_list {
+	position: absolute;
+	/*
+	background-color: white;
+	*/
+}
+.combo_list .combo_list_item {
+}
+.combo_list .combo_list_item:hover {
+	color: HighlightText;
+	background-color: Highlight;
+}
+</style>
+<script>
+'use strict';
+var combo;
+function MyCombo(element, data) {
+	this.element = element;
+	this.data = data;
+	this.input = null;
+	this.button = null;
+	this.list = null;
+	this.isListVisible = false;
+
+	// used to prevent blur event from rising up when button is clicking.
+	this.isButtonPressing = false;
+
+	this.init();
+}
+MyCombo.prototype.onfocusout = function(evt) {
+	// console.debug('onblur');
+	if(evt.target == this.list && !this.isButtonPressing) {
+		this.closeList();
+	} else if(evt.target == this.input && !this.isButtonPressing) {
+		this.closeList();
+	}
+};
+MyCombo.prototype.focus = function(evt) {
+};
+MyCombo.prototype.onkeydown = function(evt) {
+	// console.debug('onkeydown');
+	if(evt.target == this.input || evt.target == this.list) {
+		if(evt.key == 'Escape') {
+			this.closeList();
+			this.input.focus();
+		}
+	} if(evt.target == this.list) {
+		if(evt.key == 'Enter' || evt.key == ' ') {
+			this.closeList(evt.target.value);
+			this.input.focus();
+		} else if(evt.key == 'Tab') {
+			evt.preventDefault();
+			this.closeList();
+			this.input.focus();
+		} else if(evt.key == 'ArrowUp' && this.list.firstChild.selected) {
+			evt.preventDefault();
+			this.closeList();
+			this.input.focus();
+		} else if(evt.key == 'ArrowDown' && this.list.lastChild.selected) {
+			evt.preventDefault();
+			this.closeList();
+			this.input.focus();
+		}
+	} if(evt.target == this.input) {
+		if(evt.key == 'ArrowUp') {
+			this.isButtonPressing = true;
+			this.openList()
+			this.list.lastChild.selected = true;
+			this.list.focus();
+		} else if(evt.key == 'ArrowDown') {
+			this.isButtonPressing = true;
+			this.openList();
+			this.list.firstChild.selected = true;
+			this.list.focus();
+		}
+	}
+};
+MyCombo.prototype.onkeyup = function(evt) {
+	if(evt.target == this.list) {
+		if(evt.key == 'ArrowUp' || evt.key == 'ArrowDown')
+			this.isButtonPressing = false;
+	}
+};
+MyCombo.prototype.openList = function(value) {
+	this.list.value = this.input.value;
+	this.list.style.display = 'block';
+	this.isListVisible = true;
+};
+MyCombo.prototype.closeList = function(value) {
+	if(value !== undefined) this.input.value = value;
+	this.list.style.display = 'none';
+	this.isListVisible = false;
+};
+MyCombo.prototype.button_onmousedown = function(evt) {
+	if(evt.target == this.button) this.isButtonPressing = true;
+};
+MyCombo.prototype.button_onmouseup = function(evt) {
+	if(evt.target == this.button) this.isButtonPressing = false;
+}
+MyCombo.prototype.onclick = function(evt) {
+	// console.debug('onclick');
+	if(evt.target == this.button) {
+		if(this.isListVisible) {
+			this.closeList();
+		} else {
+			this.openList();
+			this.list.focus();
+		}
+	} else if(evt.target.classList.contains('combo_list_item')) {
+		this.closeList(evt.target.getAttribute('value'));
+		this.input.focus();
+	}
+};
+MyCombo.prototype.input_oninput = function(evt) {
+	if(!this.isListVisible) {
+		this.openList();
+	}
+	for(var i=0; i<this.list.childNodes.length; i++) {
+		if(evt.target.value <= this.list.childNodes.item(i).value) {
+			this.list.childNodes.item(i).selected = true;
+			break;
+		}
+	}
+};
+MyCombo.prototype.init = function() {
+	this.input = document.createElement('input');
+	this.input.type = "text";
+
+	this.button = document.createElement('button');
+	this.button.appendChild(document.createTextNode('X'));
+
+	this.list = document.createElement('select');
+	this.list.classList.add('combo_list');
+	this.list.size = 10;
+
+	Object.keys(this.data).sort().forEach(function(val) {
+		var item = document.createElement('option');
+		var itemLabel = val + ' : ' + this.data[val];
+		item.classList.add('combo_list_item');
+		item.appendChild(document.createTextNode(itemLabel));
+		item.value = val;
+		this.list.appendChild(item);
+	}.bind(this));
+
+	this.element.classList.add('combo');
+
+	this.element.appendChild(this.input);
+	this.element.appendChild(this.button);
+	this.element.appendChild(this.list);
+
+	this.input.addEventListener('input', this.input_oninput.bind(this));
+	this.button.addEventListener('mousedown', this.button_onmousedown.bind(this));
+	this.button.addEventListener('mouseup', this.button_onmouseup.bind(this));
+	this.element.addEventListener('focusout', this.onfocusout.bind(this));
+	this.element.addEventListener('keydown', this.onkeydown.bind(this));
+	this.element.addEventListener('keyup', this.onkeyup.bind(this));
+	this.element.addEventListener('click', this.onclick.bind(this));
+
+	this.closeList();
+};
+function window_onload(evt) {
+	var myCombo = document.getElementById('myCombo');
+	var data = {
+		"01" : "ABC",
+		"02" : "XYZ",
+		"10" : "123",
+		"99" : "XXX"
+	}
+	combo = new MyCombo(myCombo, data);
+}
+var combo;
+window.onload = window_onload;
+</script>
+</head>
+<body>
+<h1><ruby><rb>今日<rt>こんにち</ruby>は</h1>
+<div id="myCombo"></div>
+<div>
+<input type="text">
+<ul>
+<li>ABC
+<li>XYZ
+<li>123
+<li>789
+</ul>
+</div>
+</body>
+</html>
