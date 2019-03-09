@@ -32,7 +32,8 @@
 
 		// default option values
 		this.options = {
-			buttonLabel : 'X',
+			autoPosition : true,
+			buttonLabel : '\u25bc',
 			classPrefix : 'MyCombo_',
 			itemLabelGenerator : function(value, name) { return value + ": " + name; },
 			listSize : 10
@@ -144,6 +145,30 @@
 		}
 	};
 
+	/**
+	 * Set apropriate space between textbox and button/list.
+	 */
+	MyCombo.prototype.autoPosition = function() {
+		var ref = window.getComputedStyle(this.element);
+		var btn = window.getComputedStyle(this.button);
+
+		var d = 0;
+		var prop = [ 'borderTopWidth', 'borderBottomWidth', 'paddingTop', 'paddingBottom' ];
+		prop.forEach(function(val) {
+			d += Number.parseFloat(ref[val]) - Number.parseFloat(btn[val]);
+		}.bind(this));
+
+		this.button.style.boxSizing = 'content-box';
+		this.button.style.height = (Number.parseFloat(ref.height) + d) + 'px';
+		this.button.style.fontSize = ref.fontSize;
+		this.button.style.marginLeft = -1 * Number.parseFloat(ref.marginRight) + 'px';
+
+		this.list.style.fontSize = ref.fontSize;
+		this.list.style.maxWidth = ref.width;
+		this.list.style.marginLeft = ref.marginLeft;
+		this.list.style.marginTop = -1 * Number.parseFloat(ref.marginBottom) + 'px';
+	};
+
 	MyCombo.prototype.openList = function(value) {
 		this.list.value = this.element.value;
 		this.list.style.display = 'block';
@@ -156,6 +181,28 @@
 		this.isListVisible = false;
 	};
 
+	/**
+	 * Remove all additional components and restore textbox.
+	 */
+	MyCombo.prototype.dispose = function() {
+		this.button.parentNode.removeChild(this.button);
+		this.list.parentNode.removeChild(this.list);
+
+		// Todo: make this work correctly.
+		this.element.removeEventListener('input', this.oninput.bind(this));
+		this.element.removeEventListener('focusout', this.onfocusout.bind(this));
+		this.element.removeEventListener('keydown', this.onkeydown.bind(this));
+		this.element.removeEventListener('keyup', this.onkeyup.bind(this));
+
+		this.element = null;
+		this.button = null;
+		this.list = null;
+		this.data = null;
+	};
+
+	/**
+	 * Initialize UI Components.
+	 */
 	MyCombo.prototype.init = function() {
 		this.button = document.createElement('button');
 		this.button.appendChild(document.createTextNode(this.options.buttonLabel));
@@ -169,7 +216,7 @@
 		Object.keys(this.data).sort().forEach(function(val) {
 			var item = document.createElement('option');
 			var itemLabel = this.options.itemLabelGenerator.apply(null, [ val, this.data[val] ]);
-			item.classList.add(this.options.classPrefix + '_item');
+			item.classList.add(this.options.classPrefix + 'item');
 			item.appendChild(document.createTextNode(itemLabel));
 			item.value = val;
 			this.list.appendChild(item);
@@ -179,6 +226,10 @@
 
 		this.element.parentNode.insertBefore(this.button, nextSibling);
 		this.element.parentNode.insertBefore(this.list, nextSibling);
+
+		if(this.options.autoPosition) {
+			this.autoPosition();
+		}
 
 		this.element.addEventListener('input', this.oninput.bind(this));
 		this.element.addEventListener('focusout', this.onfocusout.bind(this));

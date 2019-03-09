@@ -8,17 +8,21 @@
 	position: relative;
 	*/
 }
-.combo_list {
-	position: absolute;
-	/*
-	background-color: white;
-	*/
+#myCombo .MyCombo_button {
+	margin: 4px;
+	border-width: 4px;
+	padding: 4px;
 }
-.combo_list .combo_list_item {
-}
-.combo_list .combo_list_item:hover {
+.MyCombo_item:hover {
 	color: HighlightText;
 	background-color: Highlight;
+}
+#myCombo {
+	margin: 16px;
+	border-width: 16px;
+	padding: 16px;
+	font-size: 200%;
+	font-family: monospace;
 }
 </style>
 <script src="./MyCombo.js"></script>
@@ -35,6 +39,8 @@ function window_onload(evt) {
 		"99" : "XXX"
 	}
 	combo = new MyCombo(myCombo, data);
+
+	new MyCombo(document.getElementById('myCombo2'), data);
 }
 var combo;
 window.onload = window_onload;
@@ -42,15 +48,8 @@ window.onload = window_onload;
 </head>
 <body>
 <h1><ruby><rb>今日<rt>こんにち</ruby>は</h1>
-<input type="text" id="myCombo" style="font-size: 24pt">
-<div>
-<input type="text">
-<ul>
-<li>ABC
-<li>XYZ
-<li>123
-<li>789
-</ul>
-</div>
+<div><input type="text" id="myCombo2"></div>
+<div><input type="text" id="myCombo"></div>
+
 </body>
 </html>
