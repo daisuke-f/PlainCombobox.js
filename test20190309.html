@@ -2,20 +2,18 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="x-ua-compatible" content="IE=Edge">
 <style>
-.combo {
-	/*
-	position: relative;
-	*/
+.MyCombo_item:hover {
+	color: HighlightText;
+	background-color: Highlight;
 }
+</style>
+<style>
 #myCombo .MyCombo_button {
 	margin: 4px;
 	border-width: 4px;
 	padding: 4px;
-}
-.MyCombo_item:hover {
-	color: HighlightText;
-	background-color: Highlight;
 }
 #myCombo {
 	margin: 16px;
@@ -23,6 +21,19 @@
 	padding: 16px;
 	font-size: 200%;
 	font-family: monospace;
+}
+#myCombo4 {
+	border-width: 2px;
+	border-radius: 12px;
+	padding: 4px 8px;
+}
+#myCombo4 ~ .MyCombo_button {
+	border-width: 2px;
+	border-top-right-radius: 12px;
+	border-bottom-right-radius: 12px;
+}
+#myCombo4 ~ .MyCombo_button ~ .MyCombo_list {
+	margin-left: 32px;
 }
 </style>
 <script src="./MyCombo.js"></script>
@@ -41,6 +52,8 @@ function window_onload(evt) {
 	combo = new MyCombo(myCombo, data);
 
 	new MyCombo(document.getElementById('myCombo2'), data);
+	new MyCombo(document.getElementById('myCombo3'), data, { buttonInside: false });
+	new MyCombo(document.getElementById('myCombo4'), data);
 }
 var combo;
 window.onload = window_onload;
@@ -49,7 +62,9 @@ window.onload = window_onload;
 <body>
 <h1><ruby><rb>今日<rt>こんにち</ruby>は</h1>
 <div><input type="text" id="myCombo2"></div>
+<div><input type="text" id="myCombo3"></div>
 <div><input type="text" id="myCombo"></div>
+<div><input type="text" id="myCombo4"></div>
 
 </body>
 </html>

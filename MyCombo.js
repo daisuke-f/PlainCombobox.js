@@ -1,6 +1,6 @@
 'use strict';
 
-(function(global) {
+(function(g) {
 
 	/**
 	 * Create a combobox.
@@ -23,16 +23,17 @@
 			}
 		} else {
 			if(!(0<Object.keys(data).length)) {
-				throw new Error('data must has 1 or more properties');
+				throw new Error('data must has at least 1 property.');
 			}
 		}
 
+		/** textbox. */
 		this.element = element;
 		this.data = data;
 
-		// default option values
 		this.options = {
 			autoPosition : true,
+			buttonInside : true,
 			buttonLabel : '\u25bc',
 			classPrefix : 'MyCombo_',
 			itemLabelGenerator : function(value, name) { return value + ": " + name; },
@@ -45,11 +46,16 @@
 			}
 		}
 
+		/** toggle button used to open/hide listbox. */
 		this.button = null;
+
+		/** listgox. */
 		this.list = null;
+
+
 		this.isListVisible = false;
 
-		// used to prevent listbox from raising blur event while it is opening.
+		/** used to prevent listbox from raising blur event while it is opening. */
 		this.isListboxOpening = false;
 
 		this.init();
@@ -64,10 +70,16 @@
 		}
 	};
 
+	MyCombo.KEYS = {
+		ESC : [ 'Escape', 'Esc' ],
+		UP : [ 'ArrowUp', 'Up' ],
+		DOWN : [ 'ArrowDown', 'Down' ]
+	};
+
 	MyCombo.prototype.onkeydown = function(evt) {
 		// console.debug('onkeydown');
 		if(evt.target == this.element || evt.target == this.list) {
-			if(evt.key == 'Escape') {
+			if(0<MyCombo.KEYS.ESC.indexOf(evt.key)) {
 				this.closeList();
 				this.element.focus();
 			}
@@ -79,22 +91,22 @@
 				evt.preventDefault();
 				this.closeList();
 				this.element.focus();
-			} else if(evt.key == 'ArrowUp' && this.list.firstChild.selected) {
+			} else if(0<MyCombo.KEYS.UP.indexOf(evt.key) && this.list.firstChild.selected) {
 				evt.preventDefault();
 				this.closeList();
 				this.element.focus();
-			} else if(evt.key == 'ArrowDown' && this.list.lastChild.selected) {
+			} else if(0<MyCombo.KEYS.DOWN.indexOf(evt.key) && this.list.lastChild.selected) {
 				evt.preventDefault();
 				this.closeList();
 				this.element.focus();
 			}
 		} if(evt.target == this.element) {
-			if(evt.key == 'ArrowUp') {
+			if(0<MyCombo.KEYS.UP.indexOf(evt.key)) {
 				this.isListboxOpening = true;
 				this.openList()
 				this.list.lastChild.selected = true;
 				this.list.focus();
-			} else if(evt.key == 'ArrowDown') {
+			} else if(0<MyCombo.KEYS.DOWN.indexOf(evt.key)) {
 				this.isListboxOpening = true;
 				this.openList();
 				this.list.firstChild.selected = true;
@@ -105,7 +117,7 @@
 
 	MyCombo.prototype.onkeyup = function(evt) {
 		if(evt.target == this.list) {
-			if(evt.key == 'ArrowUp' || evt.key == 'ArrowDown')
+			if(0<MyCombo.KEYS.UP.indexOf(evt.key) || 0<MyCombo.KEYS.DOWN.indexOf(evt.key))
 				this.isListboxOpening = false;
 		}
 	};
@@ -130,6 +142,9 @@
 		} else if(evt.target.parentNode == this.list) {
 			this.closeList(evt.target.getAttribute('value'));
 			this.element.focus();
+		} else if(evt.target == this.list) {
+			this.closeList(evt.target.value);
+			this.element.focus();
 		}
 	};
 
@@ -149,24 +164,36 @@
 	 * Set apropriate space between textbox and button/list.
 	 */
 	MyCombo.prototype.autoPosition = function() {
+		this.button.style.boxSizing = 'content-box';
+
 		var ref = window.getComputedStyle(this.element);
 		var btn = window.getComputedStyle(this.button);
 
+		var w = 0;
 		var d = 0;
 		var prop = [ 'borderTopWidth', 'borderBottomWidth', 'paddingTop', 'paddingBottom' ];
 		prop.forEach(function(val) {
-			d += Number.parseFloat(ref[val]) - Number.parseFloat(btn[val]);
+			d += parseFloat(ref[val]) - parseFloat(btn[val]);
 		}.bind(this));
 
-		this.button.style.boxSizing = 'content-box';
-		this.button.style.height = (Number.parseFloat(ref.height) + d) + 'px';
+		if(this.options.buttonInside) {
+			var prop2 = [ 'borderLeftWidth', 'borderRightWidth', 'paddingLeft', 'paddingRight', 'width' ];
+			prop2.forEach(function(val) {
+				w += parseFloat(btn[val]);
+			}.bind(this));
+
+			this.element.style.paddingRight = (parseFloat(ref.paddingRight) +
+				w - parseFloat(ref.borderRightWidth)) + 'px';
+		}
+
+		this.button.style.height = (parseFloat(ref.height) + d) + 'px';
 		this.button.style.fontSize = ref.fontSize;
-		this.button.style.marginLeft = -1 * Number.parseFloat(ref.marginRight) + 'px';
+		this.button.style.marginLeft = -1 * (w + parseFloat(ref.marginRight)) + 'px';
 
 		this.list.style.fontSize = ref.fontSize;
 		this.list.style.maxWidth = ref.width;
 		this.list.style.marginLeft = ref.marginLeft;
-		this.list.style.marginTop = -1 * Number.parseFloat(ref.marginBottom) + 'px';
+		this.list.style.marginTop = -1 * parseFloat(ref.marginBottom) + 'px';
 	};
 
 	/**
@@ -221,9 +248,10 @@
 		this.list.classList.add(this.options.classPrefix + 'list');
 		this.list.size = this.options.listSize;
 
-		Object.keys(this.data).sort().forEach(function(val) {
+		var keys = this.data instanceof Array ? this.data : Object.keys(this.data);
+		keys.sort().forEach(function(val) {
 			var item = document.createElement('option');
-			var itemLabel = this.options.itemLabelGenerator.apply(null, [ val, this.data[val] ]);
+			var itemLabel = this.options.itemLabelGenerator.apply(null, [ val, this.data instanceof Array ? val : this.data[val] ]);
 			item.classList.add(this.options.classPrefix + 'item');
 			item.appendChild(document.createTextNode(itemLabel));
 			item.value = val;
@@ -256,5 +284,5 @@
 		this.closeList();
 	};
 
-   global.MyCombo = MyCombo; 
+   g.MyCombo = MyCombo; 
 })(window);
