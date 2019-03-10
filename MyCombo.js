@@ -230,7 +230,7 @@
 		this.button.style.marginLeft = -1 * (w + parseFloat(ref.marginRight)) + 'px';
 
 		this.list.style.fontSize = ref.fontSize;
-		this.list.style.maxWidth = ref.width;
+		this.list.style.width = ref.width;
 		this.list.style.marginLeft = ref.marginLeft;
 		this.list.style.marginTop = -1 * parseFloat(ref.marginBottom) + 'px';
 	};
@@ -294,7 +294,8 @@
 		var keys = this.data instanceof Array ? this.data : Object.keys(this.data);
 		keys.sort().forEach(function(val) {
 			var item = document.createElement('option');
-			var itemLabel = this.options.itemLabelGenerator.apply(null, [ val, this.data instanceof Array ? val : this.data[val] ]);
+			var itemLabel = this.data instanceof Array ? val :
+				this.options.itemLabelGenerator.apply(null, [ val, this.data[val] ]);
 			item.classList.add(this.options.classPrefix + 'item');
 			item.appendChild(document.createTextNode(itemLabel));
 			item.value = val;

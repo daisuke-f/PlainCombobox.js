@@ -1,3 +1,4 @@
+/** @see https://en.wikipedia.org/wiki/ISO_3166-1 */
 var CountryCodeData = [
     { Name:"Afghanistan", Code2:"AF", Code3:"AFG", NumCode:"004", ISO:"ISO 3166-2:AF", Independent: "Yes" },
     { Name:"Islands Åland Islands", Code2:"AX", Code3:"ALA", NumCode:"248", ISO:"ISO 3166-2:AX", Independent: "No" },
@@ -216,7 +217,7 @@ var CountryCodeData = [
     { Name:"Sweden", Code2:"SE", Code3:"SWE", NumCode:"752", ISO:"ISO 3166-2:SE", Independent: "Yes" },
     { Name:"Switzerland", Code2:"CH", Code3:"CHE", NumCode:"756", ISO:"ISO 3166-2:CH", Independent: "Yes" },
     { Name:"Syrian Arab Republic", Code2:"SY", Code3:"SYR", NumCode:"760", ISO:"ISO 3166-2:SY", Independent: "Yes" },
-    { Name:"Taiwan, Province of China[a]", Code2:"TW", Code3:"TWN", NumCode:"158", ISO:"ISO 3166-2:TW", Independent: "No" },
+    { Name:"Taiwan, Province of China", Code2:"TW", Code3:"TWN", NumCode:"158", ISO:"ISO 3166-2:TW", Independent: "No" },
     { Name:"Tajikistan", Code2:"TJ", Code3:"TJK", NumCode:"762", ISO:"ISO 3166-2:TJ", Independent: "Yes" },
     { Name:"Tanzania, United Republic of", Code2:"TZ", Code3:"TZA", NumCode:"834", ISO:"ISO 3166-2:TZ", Independent: "Yes" },
     { Name:"Thailand", Code2:"TH", Code3:"THA", NumCode:"764", ISO:"ISO 3166-2:TH", Independent: "Yes" },

@@ -10,30 +10,25 @@
 }
 </style>
 <style>
-#myCombo3 .MyCombo_button {
-	/* margin: 4px; */
+#myCombo4 .MyCombo_button {
 	border-width: 4px;
-	/* padding: 4px; */
 }
-#myCombo3 {
+#myCombo4 {
 	margin: 16px;
 	border-width: 16px;
 	padding: 16px;
 	font-size: 200%;
 	font-family: monospace;
 }
-#myCombo4 {
+#myCombo5 {
 	border-width: 2px;
 	border-radius: 12px;
 	padding: 4px 8px;
 }
-#myCombo4 ~ .MyCombo_button {
+#myCombo5 ~ .MyCombo_button {
 	border-width: 2px;
 	border-top-right-radius: 12px;
 	border-bottom-right-radius: 12px;
-}
-#myCombo4 ~ .MyCombo_button ~ .MyCombo_list {
-	margin-left: 32px;
 }
 </style>
 <script src="./CountryCodeData.js"></script>
@@ -47,24 +42,28 @@ function window_onload(evt) {
 	var data = {};
 	CountryCodeData.forEach(function(val) { data[val.Code3] = val.Name; });
 
+	var data2 = CountryCodeData.map(function(val) { return val.Code3 });
+
 	myCombo.push(new MyCombo(document.getElementById('myCombo0'), data));
-	myCombo.push(new MyCombo(document.getElementById('myCombo1'), data, { buttonInside: false }));
-	myCombo.push(new MyCombo(document.getElementById('myCombo2'), data, { autoPosition: false }));
-	myCombo.push(new MyCombo(document.getElementById('myCombo3'), data));
+	myCombo.push(new MyCombo(document.getElementById('myCombo1'), data2));
+	myCombo.push(new MyCombo(document.getElementById('myCombo2'), data, { buttonInside: false }));
+	myCombo.push(new MyCombo(document.getElementById('myCombo3'), data, { autoPosition: false }));
 	myCombo.push(new MyCombo(document.getElementById('myCombo4'), data));
+	myCombo.push(new MyCombo(document.getElementById('myCombo5'), data));
 }
 
 window.onload = window_onload;
 </script>
 </head>
 <body>
-<h1><ruby><rb>今日<rt>こんにち</ruby>は</h1>
+<h1>Examples</h1>
 <div><input type="text" ></div>
 <div><input type="text" class="myCombo" id="myCombo0"></div>
 <div><input type="text" class="myCombo" id="myCombo1"></div>
 <div><input type="text" class="myCombo" id="myCombo2"></div>
 <div><input type="text" class="myCombo" id="myCombo3"></div>
 <div><input type="text" class="myCombo" id="myCombo4"></div>
+<div><input type="text" class="myCombo" id="myCombo5"></div>
 
 </body>
 </html>
