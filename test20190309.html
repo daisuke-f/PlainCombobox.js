@@ -36,6 +36,7 @@
 	margin-left: 32px;
 }
 </style>
+<script src="./CountryCodeData.js"></script>
 <script src="./MyCombo.js"></script>
 <script>
 'use strict';
@@ -49,6 +50,8 @@ function window_onload(evt) {
 		"10" : "123",
 		"99" : "XXX"
 	}
+	data = {};
+	CountryCodeData.forEach(function(val) { data[val.Code3] = val.Name; });
 	combo = new MyCombo(myCombo, data);
 
 	new MyCombo(document.getElementById('myCombo2'), data);
