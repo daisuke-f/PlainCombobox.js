@@ -3,12 +3,12 @@
 (function(g) {
 
 	/**
-	 * Create a combobox.
+	 * Make textbox into combobox.
 	 * 
 	 * @constructor
 	 * @param {HTMLInputElement} element a textbox to become combobox.
 	 * @param {*} data a object or string array to be used in listbox.
-	 * @param {*} options 
+	 * @param {*} options optionally overwrites default behavior. see DEFAULT_OPTIONS property.
 	 */
 	function MyCombo(element, data, options) {
 		if(!(element.tagName == 'INPUT' && element.type.toUpperCase() == 'TEXT')) {
@@ -29,30 +29,26 @@
 
 		/** textbox. */
 		this.element = element;
+
+		/** data shown inside listbox. */
 		this.data = data;
 
-		this.options = {
-			autoPosition : true,
-			buttonInside : true,
-			buttonLabel : '\u25bc',
-			classPrefix : 'MyCombo_',
-			itemLabelGenerator : function(value, name) { return value + ": " + name; },
-			listSize : 10
-		};
+		this.options = this.constructor.DEFAULT_OPTIONS;
 
+		// parameter overwrites default options.
 		if(options) {
 			for(var prop in options) {
 				this.options[prop] = options[prop];
 			}
 		}
 
-		/** toggle button used to open/hide listbox. */
+		/** toggle button to open/close listbox. */
 		this.button = null;
 
-		/** listgox. */
+		/** listbox to select and insert values into testbox. */
 		this.list = null;
 
-
+		/** status of listbox. */
 		this.isListVisible = false;
 
 		/** used to prevent listbox from raising blur event while it is opening. */
@@ -245,7 +241,7 @@
 	};
 
 	/**
-	 * Remove all additional components and restore textbox.
+	 * Remove all additionally created objects from textbox and restore it.
 	 */
 	MyCombo.prototype.dispose = function() {
 		this.button.parentNode.removeChild(this.button);
@@ -310,6 +306,15 @@
 		this.list.addEventListener('click', this.onclick.bind(this));
 
 		this.closeList();
+	};
+
+	MyCombo.DEFAULT_OPTIONS = {
+		autoPosition : true,
+		buttonInside : true,
+		buttonLabel : '\u25bc',
+		classPrefix : 'MyCombo_',
+		itemLabelGenerator : function(value, name) { return value + ": " + name; },
+		listSize : 10
 	};
 
    g.MyCombo = MyCombo; 
