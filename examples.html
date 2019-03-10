@@ -11,9 +11,6 @@
 }
 </style>
 <style>
-#myCombo4 ~ .PlainCombobox_button {
-	border-width: 16px;
-}
 #myCombo4 {
 	margin: 16px;
 	border-width: 16px;
@@ -21,11 +18,21 @@
 	font-size: 200%;
 	font-family: monospace;
 }
+#myCombo4 ~ .PlainCombobox_assets .PlainCombobox_button {
+	border-width: 16px;
+}
+#myCombo4 ~ .PlainCombobox_assets .PlainCombobox_list {
+	padding: 16px;
+}
+#myCombo4 ~ .PlainCombobox_assets .PlainCombobox_item {
+	font-family: monospace;
+}
+
 #myCombo5 {
 	border-radius: 12px;
 	padding: 4px 8px;
 }
-#myCombo5 ~ .PlainCombobox_button {
+#myCombo5 ~ .PlainCombobox_assets .PlainCombobox_button {
 	border-top-right-radius: 12px;
 	border-bottom-right-radius: 12px;
 }

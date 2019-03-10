@@ -40,10 +40,13 @@ function PlainCombobox(element, data, options) {
 		}
 	}
 
-	/** toggle button to open/close listbox. */
+	/** <span> added next to textbox and contains button and list. */
+	this.assets = null;
+
+	/** <button> to open/close listbox. */
 	this.button = null;
 
-	/** listbox to select and insert values into testbox. */
+	/** <select> to select values and update textbox with it. */
 	this.list = null;
 
 	/** status of listbox. */
@@ -280,6 +283,9 @@ PlainCombobox.prototype.dispose = function() {
  * Initialize UI Components.
  */
 PlainCombobox.prototype.init = function() {
+	this.assets = document.createElement('span');
+	this.assets.classList.add(this.options.classPrefix + 'assets');
+
 	this.button = document.createElement('button');
 	this.button.appendChild(document.createTextNode(this.options.buttonLabel));
 	this.button.classList.add(this.options.classPrefix + 'button');
@@ -300,10 +306,14 @@ PlainCombobox.prototype.init = function() {
 		this.list.appendChild(item);
 	}.bind(this));
 
-	var nextSibling = this.element.nextSibling;
+	this.assets.appendChild(this.button);
+	this.assets.appendChild(this.list);
 
-	this.element.parentNode.insertBefore(this.button, nextSibling);
-	this.element.parentNode.insertBefore(this.list, nextSibling);
+	this.element.parentNode.insertBefore(this.assets, this.element.nextSibling);
+	// var nextSibling = this.element.nextSibling;
+
+	// this.element.parentNode.insertBefore(this.button, nextSibling);
+	// this.element.parentNode.insertBefore(this.list, nextSibling);
 
 	if(this.options.autoPosition) {
 		this.autoPosition();
