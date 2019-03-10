@@ -10,12 +10,12 @@
 }
 </style>
 <style>
-#myCombo .MyCombo_button {
-	margin: 4px;
+#myCombo3 .MyCombo_button {
+	/* margin: 4px; */
 	border-width: 4px;
-	padding: 4px;
+	/* padding: 4px; */
 }
-#myCombo {
+#myCombo3 {
 	margin: 16px;
 	border-width: 16px;
 	padding: 16px;
@@ -40,34 +40,31 @@
 <script src="./MyCombo.js"></script>
 <script>
 'use strict';
-var combo;
+
+var myCombo = [];
 
 function window_onload(evt) {
-	var myCombo = document.getElementById('myCombo');
-	var data = {
-		"01" : "ABC",
-		"02" : "XYZ",
-		"10" : "123",
-		"99" : "XXX"
-	}
-	data = {};
+	var data = {};
 	CountryCodeData.forEach(function(val) { data[val.Code3] = val.Name; });
-	combo = new MyCombo(myCombo, data);
 
-	new MyCombo(document.getElementById('myCombo2'), data);
-	new MyCombo(document.getElementById('myCombo3'), data, { buttonInside: false });
-	new MyCombo(document.getElementById('myCombo4'), data);
+	myCombo.push(new MyCombo(document.getElementById('myCombo0'), data));
+	myCombo.push(new MyCombo(document.getElementById('myCombo1'), data, { buttonInside: false }));
+	myCombo.push(new MyCombo(document.getElementById('myCombo2'), data, { autoPosition: false }));
+	myCombo.push(new MyCombo(document.getElementById('myCombo3'), data));
+	myCombo.push(new MyCombo(document.getElementById('myCombo4'), data));
 }
-var combo;
+
 window.onload = window_onload;
 </script>
 </head>
 <body>
 <h1><ruby><rb>今日<rt>こんにち</ruby>は</h1>
-<div><input type="text" id="myCombo2"></div>
-<div><input type="text" id="myCombo3"></div>
-<div><input type="text" id="myCombo"></div>
-<div><input type="text" id="myCombo4"></div>
+<div><input type="text" ></div>
+<div><input type="text" class="myCombo" id="myCombo0"></div>
+<div><input type="text" class="myCombo" id="myCombo1"></div>
+<div><input type="text" class="myCombo" id="myCombo2"></div>
+<div><input type="text" class="myCombo" id="myCombo3"></div>
+<div><input type="text" class="myCombo" id="myCombo4"></div>
 
 </body>
 </html>

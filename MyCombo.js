@@ -54,6 +54,9 @@
 		/** used to prevent listbox from raising blur event while it is opening. */
 		this.isListboxOpening = false;
 
+		/** backup original style value of textbox for restoring. */
+		this.styleBackup = {};
+
 		this.init();
 	}
 
@@ -193,25 +196,37 @@
 		var ref = window.getComputedStyle(this.element);
 		var btn = window.getComputedStyle(this.button);
 
+		/** button width include padding and border. */
 		var w = 0;
+
 		var d = 0;
 		var prop = [ 'borderTopWidth', 'borderBottomWidth', 'paddingTop', 'paddingBottom' ];
 		prop.forEach(function(val) {
 			d += parseFloat(ref[val]) - parseFloat(btn[val]);
 		}.bind(this));
 
+		this.button.style.fontSize = ref.fontSize;
+
 		if(this.options.buttonInside) {
+			// calculate button width.
 			var prop2 = [ 'borderLeftWidth', 'borderRightWidth', 'paddingLeft', 'paddingRight', 'width' ];
 			prop2.forEach(function(val) {
 				w += parseFloat(btn[val]);
 			}.bind(this));
 
+			// backup inline style.
+			this.styleBackup.paddingRight = this.element.style.paddingRight;
+			this.styleBackup.width = this.element.style.width;
+
+			// add space for button inside textbox.
 			this.element.style.paddingRight = (parseFloat(ref.paddingRight) +
 				w - parseFloat(ref.borderRightWidth)) + 'px';
+			
+			this.element.style.width = (parseFloat(ref.width) -
+				w + parseFloat(ref.borderRightWidth)) + 'px';
 		}
 
 		this.button.style.height = (parseFloat(ref.height) + d) + 'px';
-		this.button.style.fontSize = ref.fontSize;
 		this.button.style.marginLeft = -1 * (w + parseFloat(ref.marginRight)) + 'px';
 
 		this.list.style.fontSize = ref.fontSize;
@@ -252,6 +267,10 @@
 		this.element.removeEventListener('focusout', this.onfocusout.bind(this));
 		this.element.removeEventListener('keydown', this.onkeydown.bind(this));
 		this.element.removeEventListener('keyup', this.onkeyup.bind(this));
+
+		for(var prop in this.styleBackup) {
+			this.element.style[prop] = this.styleBackup[prop];
+		}
 
 		this.element = null;
 		this.button = null;
