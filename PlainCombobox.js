@@ -9,8 +9,8 @@
  * @param {*} options optionally overwrites default behavior. see DEFAULT_OPTIONS property.
  */
 function PlainCombobox(element, data, options) {
-	if(!(element.tagName == 'INPUT' && element.type.toUpperCase() == 'TEXT')) {
-		throw new Error('element must be <input type="text">.');
+	if(!(element.tagName == 'INPUT' && 0<=['TEXT', 'SEARCH'].indexOf(element.type.toUpperCase()))) {
+		throw new Error('element must be <input type="text"> or <input type="search">.');
 	}
 	if(data == null) {
 		throw new Error('data must be object or string array.');
