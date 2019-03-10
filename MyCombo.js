@@ -91,22 +91,25 @@
 				evt.preventDefault();
 				this.closeList();
 				this.element.focus();
-			} else if(0<MyCombo.KEYS.UP.indexOf(evt.key) && this.list.firstChild.selected) {
+			} else if(0<=MyCombo.KEYS.UP.indexOf(evt.key) && this.list.firstChild.selected) {
 				evt.preventDefault();
 				this.closeList();
 				this.element.focus();
-			} else if(0<MyCombo.KEYS.DOWN.indexOf(evt.key) && this.list.lastChild.selected) {
+			} else if(0<=MyCombo.KEYS.DOWN.indexOf(evt.key) && this.list.lastChild.selected) {
 				evt.preventDefault();
 				this.closeList();
 				this.element.focus();
 			}
 		} if(evt.target == this.element) {
-			if(0<MyCombo.KEYS.UP.indexOf(evt.key)) {
+			if(0<=MyCombo.KEYS.UP.indexOf(evt.key)) {
+				// console.debug('up');
+				evt.preventDefault();
 				this.isListboxOpening = true;
 				this.openList()
 				this.list.lastChild.selected = true;
 				this.list.focus();
-			} else if(0<MyCombo.KEYS.DOWN.indexOf(evt.key)) {
+			} else if(0<=MyCombo.KEYS.DOWN.indexOf(evt.key)) {
+				evt.preventDefault();
 				this.isListboxOpening = true;
 				this.openList();
 				this.list.firstChild.selected = true;
@@ -117,7 +120,7 @@
 
 	MyCombo.prototype.onkeyup = function(evt) {
 		if(evt.target == this.list) {
-			if(0<MyCombo.KEYS.UP.indexOf(evt.key) || 0<MyCombo.KEYS.DOWN.indexOf(evt.key))
+			if(0<=MyCombo.KEYS.UP.indexOf(evt.key) || 0<=MyCombo.KEYS.DOWN.indexOf(evt.key))
 				this.isListboxOpening = false;
 		}
 	};
