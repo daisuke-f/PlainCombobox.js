@@ -81,7 +81,7 @@ PlainCombobox.KEYS = {
  * check if keyboard event was raised by specified key.
  * 
  * @param {KeyboardEvent} evt DOM KeyboardEvent object.
- * @param {*} expectedKey name of key name list or actual key name, or array of them.
+ * @param {*} expectedKey property name of key name list or actual key name, or array of them.
  */
 PlainCombobox.prototype.testKey = function(evt, expectedKey) {
 	var actualKey = evt.key;
@@ -260,20 +260,23 @@ PlainCombobox.prototype.closeList = function(value) {
  * Remove all additionally created objects from textbox and restore it.
  */
 PlainCombobox.prototype.dispose = function() {
-	this.button.parentNode.removeChild(this.button);
-	this.list.parentNode.removeChild(this.list);
+	// remove ui components.
+	this.assets.parentNode.removeChild(this.assets);
 
-	// Todo: make this work correctly.
+	// remove event handler from textbox.
+	// Todo: currently this does not work.
 	this.element.removeEventListener('input', this.oninput.bind(this));
 	this.element.removeEventListener('focusout', this.onfocusout.bind(this));
 	this.element.removeEventListener('keydown', this.onkeydown.bind(this));
 	this.element.removeEventListener('keyup', this.onkeyup.bind(this));
 
+	// restore original inline style of textbox.
 	for(var prop in this.styleBackup) {
 		this.element.style[prop] = this.styleBackup[prop];
 	}
 
 	this.element = null;
+	this.assets = null;
 	this.button = null;
 	this.list = null;
 	this.data = null;
@@ -310,10 +313,6 @@ PlainCombobox.prototype.init = function() {
 	this.assets.appendChild(this.list);
 
 	this.element.parentNode.insertBefore(this.assets, this.element.nextSibling);
-	// var nextSibling = this.element.nextSibling;
-
-	// this.element.parentNode.insertBefore(this.button, nextSibling);
-	// this.element.parentNode.insertBefore(this.list, nextSibling);
 
 	if(this.options.autoPosition) {
 		this.autoPosition();
