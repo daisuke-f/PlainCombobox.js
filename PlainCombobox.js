@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Make textbox into combobox.
+ * Convert existing textbox into combobox without any external libraries.
  * 
  * @constructor
  * @param {HTMLInputElement} element a textbox to become combobox.
