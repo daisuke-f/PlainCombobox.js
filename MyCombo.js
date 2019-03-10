@@ -70,45 +70,70 @@
 		}
 	};
 
+	/** key name list used to remove gaps between IE11 and standards. */
 	MyCombo.KEYS = {
 		ESC : [ 'Escape', 'Esc' ],
 		UP : [ 'ArrowUp', 'Up' ],
 		DOWN : [ 'ArrowDown', 'Down' ]
 	};
 
+	/**
+	 * check if keyboard event was raised by specified key.
+	 * 
+	 * @param {KeyboardEvent} evt DOM KeyboardEvent object.
+	 * @param {*} expectedKey name of key name list or actual key name, or array of them.
+	 */
+	MyCombo.prototype.testKey = function(evt, expectedKey) {
+		var actualKey = evt.key;
+		if(expectedKey instanceof Array) {
+			for(var i=0; i<expectedKey.length; i++) {
+				if(this.testKey(evt, expectedKey[i]))
+					return true;
+			}
+		} else {
+			if(this.constructor.KEYS[expectedKey]) {
+				return 0<=this.constructor.KEYS[expectedKey].indexOf(actualKey);
+			} else {
+				return expectedKey===actualKey;
+			}
+		}
+		return false;
+	};
+
 	MyCombo.prototype.onkeydown = function(evt) {
 		// console.debug('onkeydown');
+
 		if(evt.target == this.element || evt.target == this.list) {
-			if(0<MyCombo.KEYS.ESC.indexOf(evt.key)) {
+			if(this.testKey(evt, "ESC")) {
 				this.closeList();
 				this.element.focus();
 			}
 		} if(evt.target == this.list) {
-			if(evt.key == 'Enter' || evt.key == ' ') {
+			if(this.testKey(evt, ['Enter', ' '])) {
+				evt.preventDefault();
 				this.closeList(evt.target.value);
 				this.element.focus();
-			} else if(evt.key == 'Tab') {
+			} else if(this.testKey(evt, 'Tab')) {
 				evt.preventDefault();
 				this.closeList();
 				this.element.focus();
-			} else if(0<=MyCombo.KEYS.UP.indexOf(evt.key) && this.list.firstChild.selected) {
+			} else if(this.testKey(evt, 'UP') && this.list.firstChild.selected) {
 				evt.preventDefault();
 				this.closeList();
 				this.element.focus();
-			} else if(0<=MyCombo.KEYS.DOWN.indexOf(evt.key) && this.list.lastChild.selected) {
+			} else if(this.testKey(evt, 'DOWN') && this.list.lastChild.selected) {
 				evt.preventDefault();
 				this.closeList();
 				this.element.focus();
 			}
 		} if(evt.target == this.element) {
-			if(0<=MyCombo.KEYS.UP.indexOf(evt.key)) {
-				// console.debug('up');
+			if(this.testKey(evt, 'UP')) {
 				evt.preventDefault();
 				this.isListboxOpening = true;
 				this.openList()
 				this.list.lastChild.selected = true;
 				this.list.focus();
-			} else if(0<=MyCombo.KEYS.DOWN.indexOf(evt.key)) {
+			} else if(this.testKey(evt, 'DOWN')) {
 				evt.preventDefault();
 				this.isListboxOpening = true;
 				this.openList();
@@ -120,7 +145,7 @@
 
 	MyCombo.prototype.onkeyup = function(evt) {
 		if(evt.target == this.list) {
-			if(0<=MyCombo.KEYS.UP.indexOf(evt.key) || 0<=MyCombo.KEYS.DOWN.indexOf(evt.key))
+			if(this.testKey(evt, ['UP', 'DOWN']))
 				this.isListboxOpening = false;
 		}
 	};
