@@ -33,7 +33,7 @@
 		/** data shown inside listbox. */
 		this.data = data;
 
-		this.options = this.constructor.DEFAULT_OPTIONS;
+		this.options = Object.create(this.constructor.DEFAULT_OPTIONS);
 
 		// parameter overwrites default options.
 		if(options) {
