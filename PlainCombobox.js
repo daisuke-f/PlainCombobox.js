@@ -200,11 +200,12 @@ PlainCombobox.prototype.autoPosition = function() {
 	/** button width include padding and border. */
 	var w = 0;
 
+	/** height gap between textbox and button. */
 	var d = 0;
 	var prop = [ 'borderTopWidth', 'borderBottomWidth', 'paddingTop', 'paddingBottom' ];
 	prop.forEach(function(val) {
 		d += parseFloat(ref[val]) - parseFloat(btn[val]);
-	}.bind(this));
+	});
 
 	this.button.style.fontSize = ref.fontSize;
 
@@ -213,7 +214,7 @@ PlainCombobox.prototype.autoPosition = function() {
 		var prop2 = [ 'borderLeftWidth', 'borderRightWidth', 'paddingLeft', 'paddingRight', 'width' ];
 		prop2.forEach(function(val) {
 			w += parseFloat(btn[val]);
-		}.bind(this));
+		});
 
 		// backup inline style.
 		this.styleBackup.paddingRight = this.element.style.paddingRight;
